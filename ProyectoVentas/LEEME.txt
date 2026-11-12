@@ -1,0 +1,42 @@
+PROYECTO VENTAS
+===============
+
+Contenido
+---------
+sql/ventas.sql   Tablas, secuencia pedido_seq, procedimiento insertar_pedido y datos de prueba.
+CadVentas/       Componente de acceso a datos (proyecto Eclipse) + javadoc en CadVentas/doc.
+GuiVent/         Aplicacion de consola (proyecto Eclipse) con CadVentas.jar integrado en lib/
+                 y su javadoc en GuiVent/doc/CadVentas.
+
+Puesta en marcha
+----------------
+1. Ejecutar sql/ventas.sql completo en Oracle con el usuario que se vaya a usar.
+   (Los DROP del principio dan error la primera vez; es normal.)
+2. Conexion por defecto de CadVentas:
+       jdbc:oracle:thin:@localhost:1521:xe   usuario: ventas   contrasena: kk
+   Si la tuya es distinta, cambia las constantes de CadVentas.java (y vuelve a generar
+   el jar) o pasa los datos como argumentos a GuiVent:
+       ejecutar.bat jdbc:oracle:thin:@localhost:1521:xe miusuario miclave
+3. Ejecutar GuiVent:
+   - Eclipse: File > Import > Existing Projects into Workspace, y Run sobre GuiVent.java
+   - Consola: GuiVent\ejecutar.bat (Windows) o GuiVent/ejecutar.sh (Linux/Mac)
+
+Comprobaciones por consola (con los datos de prueba)
+----------------------------------------------------
+Leer cliente (Statement)
+  3 -> 1                          muestra a Ana Lopez
+  3 -> 99                         no existe
+
+Insertar pedido (CallableStatement + secuencia)
+  1 -> 1, 2, PED-0002, 5          correcto: 1 registro insertado
+  1 -> (en blanco), 2, PED-X, 5   error: datos obligatorios (ORA-01400)
+  1 -> 99, 2, PED-X, 5            error: cliente o producto no existen (ORA-02291)
+  1 -> 1, 2, PED-0001, 5          error: codigo repetido (ORA-00001)
+  1 -> 1, 2, PED-X, 0             error: cantidad mayor que 0 (ORA-02290)
+  1 -> 1, 2, PED-X, 99999         error: demasiados digitos (ORA-01438)
+  1 -> 1, 2, (codigo de 21 letras), 5   error: codigo demasiado largo (ORA-12899)
+
+Eliminar producto (PreparedStatement)
+  2 -> 3                          correcto: 1 registro eliminado
+  2 -> 99                         0 registros eliminados
+  2 -> 1                          error: tiene pedidos asociados (ORA-02292)
