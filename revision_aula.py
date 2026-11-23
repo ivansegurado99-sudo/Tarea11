@@ -1,11 +1,15 @@
 import csv
 import json
+from pathlib import Path
 
-# Nombres de los archivos (deben estar en la misma carpeta que este script)
-ARCHIVO_CSV = "incidencias.csv"
-ARCHIVO_ERRORES = "errores.txt"
-ARCHIVO_RESUMEN = "resumen.json"
-ARCHIVO_HISTORIAL = "historial.txt"
+# Carpeta donde está este script: los archivos se buscan siempre ahí,
+# se ejecute el programa desde donde se ejecute
+CARPETA = Path(__file__).parent
+
+ARCHIVO_CSV = CARPETA / "incidencias.csv"
+ARCHIVO_ERRORES = CARPETA / "errores.txt"
+ARCHIVO_RESUMEN = CARPETA / "resumen.json"
+ARCHIVO_HISTORIAL = CARPETA / "historial.txt"
 
 
 def localizar_errores(ruta_csv, ruta_errores):
@@ -51,7 +55,7 @@ def main():
     try:
         contador = localizar_errores(ARCHIVO_CSV, ARCHIVO_ERRORES)
     except FileNotFoundError:
-        print(f"Error: no se encuentra el archivo '{ARCHIVO_CSV}'.")
+        print(f"Error: no se encuentra el archivo '{ARCHIVO_CSV.name}'.")
         print("Descomprime el ZIP y deja los archivos en la misma carpeta que este script.")
         return  # termina el programa
 
